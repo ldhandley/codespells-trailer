@@ -2,8 +2,19 @@
 
 (require "./util.rkt")
 
-(define (shotcut . pair-paths)
-	@~a{
+(define (shotcut pair-paths)
+  (define producer-id -1)
+  
+  (define (video-producer video-path)
+    (set! producer-id (add1 producer-id))
+    
+    @~a{
+    <producer id="producer@producer-id" in="00:00:00.000" out="@(string-trim (video-file-length-string video-path))">
+    <property name="resource">@|video-path|</property>
+    </producer>
+    })
+
+  @~a{
 <mlt>
   <producer id="black" in="00:00:00.000" out="00:00:32.160">
     <property name="length">00:00:32.200</property>
@@ -17,12 +28,7 @@
   <playlist id="background">
     <entry producer="black" in="00:00:00.000" out="00:00:32.160"/>
   </playlist>
-  <producer id="producer0" in="00:00:00.000" out="00:00:17.000">
-    <property name="resource">videos/cut/flames.mp4</property>
-  </producer>
-  <producer id="producer1" in="00:00:00.000" out="00:00:15.120">
-    <property name="resource">videos/cut/rocks2.mp4</property>
-  </producer>
+  @(string-join (map video-producer (map first pair-paths)) "\n")
   <playlist id="playlist0">
     <entry producer="producer0" in="0" out="00:00:17.000"/>
     <entry producer="producer1" in="0" out="00:00:15.120"/>
@@ -74,3 +80,10 @@
 		
 	}
   )
+
+(module+ main
+	 (displayln
+	   (shotcut (list
+		      (list "videos/cut/flames.mp4" "expression-pics/flames.png")
+		      (list "videos/cut/rocks2.mp4" "expression-pics/rocks.png")
+		      ))))
