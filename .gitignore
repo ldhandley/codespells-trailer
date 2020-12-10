@@ -5,3 +5,5 @@
 compiled/
 /videos/uncut/
 /doc/
+out/
+js/node_modules/*

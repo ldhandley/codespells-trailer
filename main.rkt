@@ -118,27 +118,53 @@
     (triggers:my-mod-lang)
     (cabin-items:my-mod-lang)))
 
+
+(define (expression-page path 
+			 expression-content)
+  (page (list path)
+	(div
+	  (content)
+	  @style/inline{
+            body{
+	      background: transparent;
+	    }
+	  }
+	  expression-content)))
+
+(define (flames-expression-content [text-color "black"])
+  (list
+    @h2[style: (properties color: text-color)]{Flames}
+    (typeset-runes-block demo-lang flames)))
+
+(define (flames-expression-page)
+  (expression-page "flames.html"
+		   (flames-expression-content "white"))
+  )
+
+(define (rocks-expression-content [text-color "black"])
+  (list
+    @h2[style: (properties color: text-color)]{Rocks}
+    (typeset-runes-block demo-lang gnarly-rock)))
+
+(define (rocks-expression-page)
+  (expression-page "rocks.html"
+		   (rocks-expression-content "black"))
+  )
+
 (define (index)
   (page index.html
         @md{
  # Novice Expressions
 	  
- @h2{Flames}
-
- Cave
-
- @(typeset-runes-block demo-lang flames)
+ @(flames-expression-content)
 
  @(video-embed "flames.mp4")
 	  
  @h2{Rock}
-	  
- Temple
+ 
+ @(rocks-expression-content)
 
- @(typeset-runes-block demo-lang gnarly-rock)
-
- @(video-embed "rocks2.mp4")
-	  
+ @(video-embed "rocks2.mp4") 
 	  
  @h2{Apple}
 	  
@@ -273,8 +299,31 @@
 
 (define (site)
   (list
+   (bootstrap-files)
    (videos)
-   (index)))
+   (index)
+   (flames-expression-page)
+   (rocks-expression-page)
+   ))
 
-(render #:to "out"
-	(site))
+
+(module+ 
+  main
+
+  (require "js/js-pic.rkt")
+
+  (render #:to "out"
+	  (site))
+
+  (js-pic 
+    "http://localhost:8000/flames.html"
+    (build-path (current-directory) "expression-pics" "flames.png"))
+  
+  (js-pic 
+    "http://localhost:8000/rocks.html"
+    (build-path (current-directory) "expression-pics" "rocks.png"))
+
+  )
+
+
+
